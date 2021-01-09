@@ -9,17 +9,18 @@
 // keydown { raw, name, key, code, first, last }
 // keyup { raw, name, key, code }
 
-class GaejjeoneunGeot {
+class EventSequencesTarget {
   dom = null;
   eventHistory = [];
   listeners = {};
-  eventSeriesCache = {};
 
-  constructor(dom, options) {
+  constructor(dom, options, Parser = EventSequencesParser) {
     this.options = options = options ||
         dom && Object.getPrototypeOf(dom) === Object.prototype ? dom : null ||
         { preventInputTagKeyEvent: true };
     this.dom = dom || window;
+
+    this.parser = new Parser(); // ?
 
     this.keydown = this.keydown.bind(this);
     this.keyup = this.keyup.bind(this);
@@ -220,7 +221,7 @@ class GaejjeoneunGeot {
     listener:
     for (const key of listenerKeys) {
       const listeners = this.listeners[key];
-      const eventSeries = this.eventSeriesCache[key];
+      const eventSeries = this.parser.eventSeriesCache[key];
 
       function emit(event) {
         for (var listener of listeners) {
@@ -408,7 +409,7 @@ class GaejjeoneunGeot {
   }
 
   addEventListener(eventSeries, listener) {
-    if (this.parseEventSeries(eventSeries) !== null) {
+    if (this.parser.parseEventSeries(eventSeries) !== null) {
       (this.listeners[eventSeries] = this.listeners[eventSeries] || []).push(listener);
     }
   }
@@ -418,11 +419,14 @@ class GaejjeoneunGeot {
     this.listeners[eventSeries].splice(index, 1);
     if (this.listeners[eventSeries].length === 0) {
       delete this.listeners[eventSeries];
-      delete this.eventSeriesCache[eventSeries];
+      delete this.parser.eventSeriesCache[eventSeries];
     }
   }
+}
 
-  // util
+class EventSequencesParser {
+  eventSeriesCache = {};
+
   parseEventSeries(eventSeries) { // string
     if (this.eventSeriesCache[eventSeries]) {
       return this.eventSeriesCache[eventSeries];
