@@ -35,18 +35,24 @@ gg.addEventListener('keydown(Shift)|click(.item)', e => {
 });
 
 var prevX, prevY;
+var firstDrag = true;
 gg.addEventListener('keydown(Shift)|drag(.item)', e => {
   console.log('shift 누르고 .item 끄는 중');
-  prevX = gg.mousedownX;
-  prevY = gg.mousedownY;
+  if (firstDrag) {
+    firstDrag = false;
+    var { top, left } = window.getComputedStyle(e.target);
+    prevX = Number.parseFloat(left);
+    prevY = Number.parseFloat(top);
+  }
 
-  e.target.style.top = e.y + 'px';
-  e.target.style.left = e.x + 'px';
+  e.target.style.top = (prevY + e.y - gg.mousedownY) + 'px';
+  e.target.style.left = (prevX + e.x - gg.mousedownX) + 'px';
 });
 gg.addEventListener('keydown(Shift)|drop(.item)', e => {
   console.log('shift 누르고 .item 끌다가 놨음');
-  e.target.style.top = e.y + 'px';
-  e.target.style.left = e.x + 'px';
+  e.target.style.top = (prevY + e.y - gg.mousedownY) + 'px';
+  e.target.style.left = (prevX + e.x - gg.mousedownX) + 'px';
+  firstDrag = true;
 });
 /*
 gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Escape)', e => {
