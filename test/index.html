@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="./index.css">
+<div id="wrapper">
+  <div class="item A">A</div>
+  <div class="item B">B</div>
+  <div class="recycle-bin">Recycle Bin</div>
+  <input placeholder="여기는 키 다운 안 먹음 s" />
+</div>
+<script src="util.js"></script>
+<script src="../src/event-sequences-handler.js"></script>
+<script>
+var gg = new GaejjeoneunGeot();
+
+gg.addEventListener('keydown(s)', e => {
+  console.log('keydown s');
+});
+
+gg.addEventListener('keydown(Control)|move()', e => console.log('컨트롤 누른채 마우스 움직이는 중', e));
+
+gg.addEventListener('click(.item)', e => {
+  console.log('.item 누름. 아무 키 안 누르고 눌렀는지는 안 만듦');
+});
+// gg.addEventListener('nokeydown|click(.item)', e => console.log('nokeydown|move()', e));
+
+gg.addEventListener('keydown(Shift)|click(.item)', e => {
+  console.log('시프트 누른 채 .item 누름');
+  if (!e.target.style.backgroundColor) {
+    e.target.style.backgroundColor = 'yellow';
+    e.target.style.color = 'black';
+  } else {
+    e.target.style.backgroundColor = '';
+    e.target.style.color = '';
+  }
+});
+
+var prevX, prevY;
+gg.addEventListener('keydown(Shift)|drag(.item)', e => {
+  console.log('shift 누르고 .item 끄는 중');
+  prevX = gg.mousedownX;
+  prevY = gg.mousedownY;
+
+  e.target.style.top = e.y + 'px';
+  e.target.style.left = e.x + 'px';
+});
+gg.addEventListener('keydown(Shift)|drop(.item)', e => {
+  console.log('shift 누르고 .item 끌다가 놨음');
+  e.target.style.top = e.y + 'px';
+  e.target.style.left = e.x + 'px';
+});
+/*
+gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Escape)', e => {
+  // cancel
+  console.log('Esc 눌러서 취소함');
+  e.target.style.top = prevY + 'px';
+  e.target.style.left = prevX + 'px';
+});
+*/
+// gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Shift)', e => console.log('keydown(Shift)|drag(.item)|keyup(Shift)', e));
+// 코드 짜기 귀찮아서 안 함
+</script>
