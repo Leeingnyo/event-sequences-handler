@@ -327,7 +327,7 @@ class EventSequencesTarget {
           }
 
           emit({
-            rawEvents: [this.latestEvent],
+            rawEvents: [this.reverseFind(s => s.name === 'mousedown'), this.latestEvent],
             x: this.mouseX,
             y: this.mouseY,
             target: this.mousedownTarget
