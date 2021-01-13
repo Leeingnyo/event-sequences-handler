@@ -87,7 +87,6 @@ class EventSequencesTarget {
     this.eventHistory.pop();
   }
   blur(event) {
-    console.log(event);
     for (var i = this.eventHistory.length - 1; i >= 0; i--) {
       var ev = this.eventHistory[i];
       if (ev.name === 'keydown') {
