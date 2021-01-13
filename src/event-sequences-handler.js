@@ -27,6 +27,7 @@ class EventSequencesTarget {
     this.mousedown = this.mousedown.bind(this);
     this.mousemove = this.mousemove.bind(this);
     this.mouseup = this.mouseup.bind(this);
+    this.blur = this.blur.bind(this);
 
     this.bind();
   }
@@ -83,6 +84,15 @@ class EventSequencesTarget {
       this.eventHistory.splice(indexOfSameKeydown, 1);
     }
     this.eventHistory.pop();
+  }
+  blur(event) {
+    console.log(event);
+    for (var i = this.eventHistory.length - 1; i >= 0; i--) {
+      var ev = this.eventHistory[i];
+      if (ev.name === 'keydown') {
+        this.eventHistory.splice(i, 1);
+      }
+    }
   }
 
   getCurrentXY(event) {
@@ -158,6 +168,7 @@ class EventSequencesTarget {
   }
 
   bind() {
+    window.addEventListener('blur', this.blur);
     this.dom.addEventListener('keydown', this.keydown);
     this.dom.addEventListener('keyup', this.keyup);
     this.dom.addEventListener('mousedown', this.mousedown);
@@ -165,6 +176,7 @@ class EventSequencesTarget {
     this.dom.addEventListener('mouseup', this.mouseup);
   }
   unbind() {
+    window.removeEventListener('blur', this.blur);
     this.dom.removeEventListener('keydown', this.keydown);
     this.dom.removeEventListener('keyup', this.keyup);
     this.dom.removeEventListener('mousedown', this.mousedown);
