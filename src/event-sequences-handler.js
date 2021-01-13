@@ -230,10 +230,10 @@ class EventSequencesTarget {
   }
 
   isKeydown(key, code, strictly = false) {
-    return !!this.reverseFind(s => s.name === 'keydown' && strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code));
+    return !!this.reverseFind(s => s.name === 'keydown' && (strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code)));
   }
   getKeydownEvent(key, code, strictly = false) {
-    return this.reverseFind(s => s.name === 'keydown' && strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code)) || null;
+    return this.reverseFind(s => s.name === 'keydown' && (strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code))) || null;
   }
 
   emit() {
