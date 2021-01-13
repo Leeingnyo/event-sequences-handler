@@ -13,6 +13,7 @@ class EventSequencesTarget {
   dom = null;
   eventHistory = [];
   listeners = {};
+  mousemoved = false;
 
   constructor(dom, options, Parser = EventSequencesParser) {
     this.options = options = options ||
@@ -123,6 +124,7 @@ class EventSequencesTarget {
   }
   mousemove(event) {
     var { x, y } = this.getCurrentXY(event);
+    this.mousemoved = true;
     if (this.latestEvent?.name === 'mousemove') {
       this.latestEvent.x = x;
       this.latestEvent.y = y;
@@ -146,6 +148,7 @@ class EventSequencesTarget {
     }
 
     this.emit();
+    this.mousemoved = false;
   }
   mouseup(event) {
     var { x, y } = this.getCurrentXY(event);
@@ -207,6 +210,9 @@ class EventSequencesTarget {
 
   get isMousedown() {
     return !!this.reverseFind(s => s.name === 'mousedown');
+  }
+  get isMousemoved() {
+    return this.mousemoved;
   }
   get mousedownX() {
     return this.reverseFind(s => s.name === 'mousedown')?.x || null;
@@ -285,7 +291,7 @@ class EventSequencesTarget {
         }
         case 'move': {
           // 움직인다!
-          if (this.latestEvent.name !== 'mousemove') {
+          if (this.latestEvent.name !== 'mousemove' || !this.isMousemoved) {
             continue;
           }
           // 뭐 누르고 있으면 드래그임
@@ -313,7 +319,7 @@ class EventSequencesTarget {
         }
         case 'drag': {
           // 움직인다!
-          if (this.latestEvent.name !== 'mousemove') {
+          if (this.latestEvent.name !== 'mousemove' || !this.isMousemoved) {
             continue;
           }
           // 뭐 누르고 있지 않으면 무브임
