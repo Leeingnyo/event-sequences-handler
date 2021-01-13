@@ -13,18 +13,18 @@
 var gg = new EventSequencesTarget();
 
 gg.addEventListener('keydown(s)', e => {
-  console.log('keydown s');
+  console.log('keydown s', e);
 });
 
 gg.addEventListener('keydown(Control)|move()', e => console.log('컨트롤 누른채 마우스 움직이는 중', e));
 
 gg.addEventListener('click(.item)', e => {
-  console.log('.item 누름. 아무 키 안 누르고 눌렀는지는 안 만듦');
+  console.log('.item 누름. 아무 키 안 누르고 눌렀는지는 안 만듦', e);
 });
 // gg.addEventListener('nokeydown|click(.item)', e => console.log('nokeydown|move()', e));
 
 gg.addEventListener('keydown(Shift)|click(.item)', e => {
-  console.log('시프트 누른 채 .item 누름');
+  console.log('시프트 누른 채 .item 누름', e);
   if (!e.target.style.backgroundColor) {
     e.target.style.backgroundColor = 'yellow';
     e.target.style.color = 'black';
@@ -37,7 +37,7 @@ gg.addEventListener('keydown(Shift)|click(.item)', e => {
 var prevX, prevY;
 var firstDrag = true;
 gg.addEventListener('keydown(Shift)|drag(.item)', e => {
-  console.log('shift 누르고 .item 끄는 중');
+  console.log('shift 누르고 .item 끄는 중', e);
   if (firstDrag) {
     firstDrag = false;
     var { top, left } = window.getComputedStyle(e.target);
@@ -49,19 +49,19 @@ gg.addEventListener('keydown(Shift)|drag(.item)', e => {
   e.target.style.left = (prevX + e.x - gg.mousedownX) + 'px';
 });
 gg.addEventListener('keydown(Shift)|drop(.item)', e => {
-  console.log('shift 누르고 .item 끌다가 놨음');
+  console.log('shift 누르고 .item 끌다가 놨음', e);
   e.target.style.top = (prevY + e.y - gg.mousedownY) + 'px';
   e.target.style.left = (prevX + e.x - gg.mousedownX) + 'px';
   firstDrag = true;
 });
 gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Shift)', e => {
-  console.log('shift 누르고 .item 끌다가 shift를 뗐음');
+  console.log('shift 누르고 .item 끌다가 shift를 뗐음', e);
   gg.mousedownTarget.style.top = (prevY + e.y - gg.mousedownY) + 'px';
   gg.mousedownTarget.style.left = (prevX + e.x - gg.mousedownX) + 'px';
   firstDrag = true;
 });
 gg.addEventListener('keydown(Shift)|drag(.item)|keydown(KeyQ)', e => {
-  console.log('Q 눌러서 취소함');
+  console.log('Q 눌러서 취소함', e);
   gg.mousedownTarget.style.top = prevY + 'px';
   gg.mousedownTarget.style.left = prevX + 'px';
 });
