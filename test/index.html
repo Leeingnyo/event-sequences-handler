@@ -54,14 +54,15 @@ gg.addEventListener('keydown(Shift)|drop(.item)', e => {
   e.target.style.left = (prevX + e.x - gg.mousedownX) + 'px';
   firstDrag = true;
 });
-/*
-gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Escape)', e => {
-  // cancel
-  console.log('Esc 눌러서 취소함');
-  e.target.style.top = prevY + 'px';
-  e.target.style.left = prevX + 'px';
+gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Shift)', e => {
+  console.log('shift 누르고 .item 끌다가 shift를 뗐음');
+  gg.mousedownTarget.style.top = (prevY + e.y - gg.mousedownY) + 'px';
+  gg.mousedownTarget.style.left = (prevX + e.x - gg.mousedownX) + 'px';
+  firstDrag = true;
 });
-*/
-// gg.addEventListener('keydown(Shift)|drag(.item)|keyup(Shift)', e => console.log('keydown(Shift)|drag(.item)|keyup(Shift)', e));
-// 코드 짜기 귀찮아서 안 함
+gg.addEventListener('keydown(Shift)|drag(.item)|keydown(KeyQ)', e => {
+  console.log('Q 눌러서 취소함');
+  gg.mousedownTarget.style.top = prevY + 'px';
+  gg.mousedownTarget.style.left = prevX + 'px';
+});
 </script>
