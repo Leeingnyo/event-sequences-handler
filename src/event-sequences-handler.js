@@ -410,8 +410,40 @@ class EventSequencesTarget {
             continue;
           }
 
+          // 선행 조건 만족하는지 살펴보기
+          const events = [];
+          var currentEventIndex = this.eventHistory.length - 1;
+          for (var i = eventSeries.length - 2; i >= 0; i--) {
+            var condition = eventSeries[i];
+            if (condition.name === 'keydown') {
+              const keydownEvent = this.getKeydownEvent(condition.target, condition.target);
+              if (!keydownEvent || this.eventHistory.indexOf(keydownEvent) > currentEventIndex) {
+                continue listener;
+              }
+              events.push(keydownEvent);
+            }
+            if (condition.name === 'drag' || condition.name === 'move') {
+              if (condition.name === 'drag' && !this.mousedownTarget?.matches(condition.target)) {
+                continue listener;
+              }
+              var mousemoveEvent, mousedownEvent;
+              while (currentEventIndex >= 0 && (mousemoveEvent = this.eventHistory[currentEventIndex--]).name !== 'mousemove');
+              if (mousemoveEvent?.name !== 'mousemove') {
+                continue listener;
+              }
+              events.push(mousemoveEvent);
+              if (condition.name === 'drag') {
+                while (currentEventIndex >= 0 && (mousedownEvent = this.eventHistory[currentEventIndex--]).name !== 'mousedown');
+                if (mousedownEvent?.name !== 'mousedown') {
+                  continue listener;
+                }
+                events.push(mousedownEvent);
+              }
+            }
+          }
+
           emit({
-            events: [this.latestEvent],
+            events: events.reverse().concat([this.latestEvent]),
             key: this.latestEvent.raw.key,
             code: this.latestEvent.raw.code
           });
@@ -419,6 +451,10 @@ class EventSequencesTarget {
         }
         case 'keyup': {
           if (this.latestEvent.name !== 'keyup') {
+            continue;
+          }
+          if (lastEvent.target !== this.latestEvent.raw.key &&
+              lastEvent.target !== this.latestEvent.raw.code) {
             continue;
           }
 
