@@ -627,7 +627,8 @@ class EventSequencesParser {
     }
     // TODO 여기서 뭐 드랍이랑 동시에 키업 같은 거 놓으면 때찌한다 같은 것도 넣기
     // 정확히는
-    // 마우스 이벤트는 하나만 있어야 함
+    // 마우스 이벤트는 하나만 있어야 함 (커서는 하나니까)
+    // keyup, click, drop 은 마지막에만 존재 가능
 
     this.eventSeriesCache[eventSeries] = events;
     return events;
