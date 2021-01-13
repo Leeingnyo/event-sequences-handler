@@ -272,6 +272,7 @@ class EventSequencesTarget {
             continue;
           }
 
+          const events = [];
           // 선행 조건 만족하는지 살펴보기
           // 클릭이면 근데 마우스 다운 이전 걸 봐야하나
           for (var i = eventSeries.length - 2; i >= 0; i--) {
@@ -280,11 +281,12 @@ class EventSequencesTarget {
               if (!this.isKeydown(condition.target, condition.target)) {
                 continue listener;
               }
+              events.push(this.reverseFind(s => s.name === 'keydown' && (s.key === condition.target || s.code === condition.target)));
             }
           }
 
           emit({
-            rawEvents: [this.latestEvent],
+            events: events.concat([this.latestEvent]),
             x: this.mouseX,
             y: this.mouseY,
             target: this.mousedownTarget
@@ -303,17 +305,19 @@ class EventSequencesTarget {
 
           // 선행 조건 만족하는지 살펴보기
           // 마우스 이벤트의 선행 조건은 키 다운 뿐 같음
+          const events = [];
           for (var i = eventSeries.length - 2; i >= 0; i--) {
             var condition = eventSeries[i];
             if (condition.name === 'keydown') {
               if (!this.isKeydown(condition.target, condition.target)) {
                 continue listener;
               }
+              events.push(this.reverseFind(s => s.name === 'keydown' && (s.key === condition.target || s.code === condition.target)));
             }
           }
 
           emit({
-            rawEvents: [this.latestEvent],
+            events: events.concat([this.latestEvent]),
             x: this.mouseX,
             y: this.mouseY
           });
@@ -335,6 +339,7 @@ class EventSequencesTarget {
 
           // 선행 조건 만족하는지 살펴보기
           // 드래그에서는 마우스 다운 이전 키 다운만 봐야하나?
+          const events = [];
           var mousedownEventIndex = this.reverseFindIndex(s => s.name === 'mousedown');
           for (var i = eventSeries.length - 2; i >= 0; i--) {
             var condition = eventSeries[i];
@@ -343,11 +348,12 @@ class EventSequencesTarget {
               if (!keydownEvent || this.eventHistory.indexOf(keydownEvent) > mousedownEventIndex) {
                 continue listener;
               }
+              events.push(keydownEvent);
             }
           }
 
           emit({
-            rawEvents: [this.reverseFind(s => s.name === 'mousedown'), this.latestEvent],
+            events: events.concat([this.reverseFind(s => s.name === 'mousedown'), this.latestEvent]),
             x: this.mouseX,
             y: this.mouseY,
             target: this.mousedownTarget
@@ -374,6 +380,7 @@ class EventSequencesTarget {
 
           // 선행 조건 만족하는지 살펴보기
           // 드랍도 마우스 다운 이전 키 다운만 봐야하나?
+          const events = [];
           var mousedownEventIndex = this.reverseFindIndex(s => s.name === 'mousedown');
           for (var i = eventSeries.length - 2; i >= 0; i--) {
             var condition = eventSeries[i];
@@ -382,11 +389,12 @@ class EventSequencesTarget {
               if (!keydownEvent || this.eventHistory.indexOf(keydownEvent) > mousedownEventIndex) {
                 continue listener;
               }
+              events.push(keydownEvent);
             }
           }
 
           emit({
-            rawEvents: [this.latestEvent],
+            events: events.concat([this.reverseFind(s => s.name === 'mousedown'), this.latestEvent]),
             x: this.mouseX,
             y: this.mouseY,
             target: this.mousedownTarget
@@ -403,7 +411,7 @@ class EventSequencesTarget {
           }
 
           emit({
-            rawEvents: [this.latestEvent],
+            events: [this.latestEvent],
             key: this.latestEvent.raw.key,
             code: this.latestEvent.raw.code
           });
@@ -418,7 +426,7 @@ class EventSequencesTarget {
           // TODO
 
           emit({
-            rawEvents: [this.latestEvent],
+            events: [this.latestEvent],
             key: this.latestEvent.raw.key,
             code: this.latestEvent.raw.code
           });
