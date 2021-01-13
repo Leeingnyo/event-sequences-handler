@@ -232,6 +232,9 @@ class EventSequencesTarget {
   isKeydown(key, code, strictly = false) {
     return !!this.reverseFind(s => s.name === 'keydown' && strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code));
   }
+  getKeydownEvent(key, code, strictly = false) {
+    return this.reverseFind(s => s.name === 'keydown' && strictly ? (s.key === key && s.code === code) : (s.key === key || s.code === code)) || null;
+  }
 
   emit() {
     var listenerKeys = Object.keys(this.listeners);
@@ -333,11 +336,11 @@ class EventSequencesTarget {
           // 선행 조건 만족하는지 살펴보기
           // 드래그에서는 마우스 다운 이전 키 다운만 봐야하나?
           var mousedownEventIndex = this.reverseFindIndex(s => s.name === 'mousedown');
-          if (mousedownEventIndex === 0) continue;
-          for (var i = mousedownEventIndex - 1; i >= 0; i--) {
+          for (var i = eventSeries.length - 2; i >= 0; i--) {
             var condition = eventSeries[i];
             if (condition.name === 'keydown') {
-              if (!this.isKeydown(condition.target, condition.target)) {
+              const keydownEvent = this.getKeydownEvent(condition.target, condition.target);
+              if (!keydownEvent || this.eventHistory.indexOf(keydownEvent) > mousedownEventIndex) {
                 continue listener;
               }
             }
@@ -372,11 +375,11 @@ class EventSequencesTarget {
           // 선행 조건 만족하는지 살펴보기
           // 드랍도 마우스 다운 이전 키 다운만 봐야하나?
           var mousedownEventIndex = this.reverseFindIndex(s => s.name === 'mousedown');
-          if (mousedownEventIndex === 0) continue;
-          for (var i = mousedownEventIndex - 1; i >= 0; i--) {
+          for (var i = eventSeries.length - 2; i >= 0; i--) {
             var condition = eventSeries[i];
             if (condition.name === 'keydown') {
-              if (!this.isKeydown(condition.target, condition.target)) {
+              const keydownEvent = this.getKeydownEvent(condition.target, condition.target);
+              if (!keydownEvent || this.eventHistory.indexOf(keydownEvent) > mousedownEventIndex) {
                 continue listener;
               }
             }
