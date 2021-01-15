@@ -525,68 +525,77 @@ class EventSequencesParser {
       return this.eventSeriesCache[eventSeries];
     }
 
+    try {
+      const events = this.semanticCheck(this.parse(this.tokenize(eventSeries)));
+      this.eventSeriesCache[eventSeries] = events;
+      return events;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  tokenize(eventSeriesString) {
     // tokenize
     // token type
     // { type: STRING, value: string }
     // { type: open_bracket }
     // { type: close_bracket }
     // { type: separator }
-    const
-        T_STRING = 'T_STRING',
-        T_OPEN_BRACKET = 'T_OPEN_BRACKET',
-        T_CLOSE_BRACKET = 'T_CLOSE_BRACKET',
-        T_SEPARATOR = 'T_SEPARATOR';
     const separator = '|';
 
     const tokens = [];
     var buffer = '';
     var meetOpenBracket = false;
     // meetOpenQuote = null; // ''' or """
-    for (var i = 0; i < eventSeries.length; i++) {
-      if (eventSeries[i] === '(') {
-        if (buffer) tokens.push({ type: T_STRING, value: buffer });
+    for (var i = 0; i < eventSeriesString.length; i++) {
+      if (eventSeriesString[i] === '(') {
+        if (buffer) tokens.push({ type: EventSequencesParser.T_STRING, value: buffer });
         buffer = '';
-        tokens.push({ type: T_OPEN_BRACKET });
+        tokens.push({ type: EventSequencesParser.T_OPEN_BRACKET });
         meetOpenBracket = true;
         continue;
       }
-      else if (meetOpenBracket && eventSeries[i] === ')') {
-        if (buffer) tokens.push({ type: T_STRING, value: buffer });
+      else if (meetOpenBracket && eventSeriesString[i] === ')') {
+        if (buffer) tokens.push({ type: EventSequencesParser.T_STRING, value: buffer });
         buffer = '';
-        tokens.push({ type: T_CLOSE_BRACKET });
+        tokens.push({ type: EventSequencesParser.T_CLOSE_BRACKET });
         meetOpenBracket = false;
         continue;
-      } else if (eventSeries[i] === separator) {
-        if (buffer) tokens.push({ type: T_STRING, value: buffer });
+      } else if (eventSeriesString[i] === separator) {
+        if (buffer) tokens.push({ type: EventSequencesParser.T_STRING, value: buffer });
         buffer = '';
-        tokens.push({ type: T_SEPARATOR });
+        tokens.push({ type: EventSequencesParser.T_SEPARATOR });
         continue;
       }
-      buffer += eventSeries[i];
+      buffer += eventSeriesString[i];
     }
-    if (buffer) tokens.push({ type: T_STRING, value: buffer });
+    if (buffer) tokens.push({ type: EventSequencesParser.T_STRING, value: buffer });
 
+    return tokens;
+  }
+
+  parse(tokens) {
     // parse
     // eventSeries = T_STRING(eventName) T_OPEN_BRACKET [ T_STRING(target) ] T_CLOSE_BRACKET [ T_SEPARATOR eventSeries ] ...
     // TODO nokeydown 같은 옵션은 어쩔 건지 생각하기
     function getEvent(tokens) {
-      if (tokens.length === 0 || tokens[0].type !== T_STRING) {
+      if (tokens.length === 0 || tokens[0].type !== EventSequencesParser.T_STRING) {
         throw new Error(`Unable to parse "${eventSeries}"`);
       }
       const eventName = tokens.shift().value;
       const ev = { name: eventName };
-      if (tokens.length === 0 || tokens[0].type !== T_OPEN_BRACKET) {
+      if (tokens.length === 0 || tokens[0].type !== EventSequencesParser.T_OPEN_BRACKET) {
         console.log(tokens);
         throw new Error(`Unable to parse "${eventSeries}"`);
       }
       tokens.shift();
 
-      if (tokens.length === 0 || tokens[0].type === T_STRING) {
+      if (tokens.length === 0 || tokens[0].type === EventSequencesParser.T_STRING) {
         var target = tokens.shift().value;
         ev.target = target;
       }
 
-      if (tokens.length === 0 || tokens[0].type !== T_CLOSE_BRACKET) {
+      if (tokens.length === 0 || tokens[0].type !== EventSequencesParser.T_CLOSE_BRACKET) {
         throw new Error(`Unable to parse "${eventSeries}"`);
       }
       tokens.shift();
@@ -596,7 +605,7 @@ class EventSequencesParser {
     function getEvents(tokens) {
       const events = [getEvent(tokens)];
       while (tokens.length > 0) {
-        if (tokens[0].type !== T_SEPARATOR) {
+        if (tokens[0].type !== EventSequencesParser.T_SEPARATOR) {
           throw new Error(`Unable to parse "${eventSeries}"`);
         }
         tokens.shift();
@@ -605,7 +614,10 @@ class EventSequencesParser {
       return events;
     }
     const events = getEvents(tokens);
+    return events;
+  }
 
+  semanticCheck(events) {
     // semantic check
     const keyboardEventType = [
       'keydown', 'keyup'
@@ -629,8 +641,10 @@ class EventSequencesParser {
     // 정확히는
     // 마우스 이벤트는 하나만 있어야 함 (커서는 하나니까)
     // keyup, click, drop 은 마지막에만 존재 가능
-
-    this.eventSeriesCache[eventSeries] = events;
     return events;
   }
 }
+EventSequencesParser.T_STRING = 'T_STRING',
+EventSequencesParser.T_OPEN_BRACKET = 'T_OPEN_BRACKET',
+EventSequencesParser.T_CLOSE_BRACKET = 'T_CLOSE_BRACKET',
+EventSequencesParser.T_SEPARATOR = 'T_SEPARATOR';
