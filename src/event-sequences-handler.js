@@ -644,7 +644,13 @@ class EventSequencesParser {
     return events;
   }
 }
+/*
 EventSequencesParser.T_STRING = 'T_STRING',
 EventSequencesParser.T_OPEN_BRACKET = 'T_OPEN_BRACKET',
 EventSequencesParser.T_CLOSE_BRACKET = 'T_CLOSE_BRACKET',
 EventSequencesParser.T_SEPARATOR = 'T_SEPARATOR';
+*/
+EventSequencesParser.T_STRING = 1,
+EventSequencesParser.T_OPEN_BRACKET = 2,
+EventSequencesParser.T_CLOSE_BRACKET = 3,
+EventSequencesParser.T_SEPARATOR = 4;
